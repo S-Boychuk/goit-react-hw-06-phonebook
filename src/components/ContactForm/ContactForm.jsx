@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import css from './ContactForm.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
+import { getContacts } from 'redux/selectors';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleInput = event => {
     const { name, value } = event.currentTarget;
@@ -22,13 +28,21 @@ const ContactForm = () => {
     }
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    resetForm();
+  const handleSubmit = evt => {
+    evt.preventDefault();
+    if (
+      contacts.find(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      )
+    ) {
+      window.alert(`we ara sorry, contact ${name} has already existed`);
+      return;
+    }
+    dispatch(addContact(name, number));
+    reset();
   };
 
-  const resetForm = () => {
+  const reset = () => {
     setName('');
     setNumber('');
   };
